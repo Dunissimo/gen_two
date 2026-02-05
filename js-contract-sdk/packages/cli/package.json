@@ -1,0 +1,24 @@
+{
+  "name": "@wavesenterprise/contract-cli",
+  "version": "0.0.4",
+  "description": "Waves Enterprise Contracts CLI",
+  "main": "index.js",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "we-cli": "index.js"
+  },
+  "author": {
+    "name": "Timofey Semenyuk",
+    "email": "rustfy@gmail.com",
+    "url": "https://github.com/stfy"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@wavesenterprise/js-sdk": "^3.4.7",
+    "commander": "^9.1.0",
+    "node-fetch": "^2.6.7"
+  }
+}
