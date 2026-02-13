@@ -3,10 +3,12 @@ import { exec } from 'child_process'
 import { NetworkInterfaceInfo, networkInterfaces } from 'os'
 import { broadcast, getContractDeveloper, getParticipants, sleep } from './utils'
 import { CallContractTx, CreateContractTx } from '@wavesenterprise/voting-blockchain-tools/transactions'
-import { CONTRACT_NAME, NODE_ADDRESS } from './config'
+import { CONTRACT_NAME, NODE_ADDRESS, NODE_KEYPAIR_PASSWORD } from './config'
 import * as path from 'path'
 import { WaitTransactionMining } from '@wavesenterprise/voting-contract-api'
 import axios from 'axios'
+import { writeFileSync } from 'fs'
+
 
 const contractName = CONTRACT_NAME.toLowerCase()
 
@@ -86,7 +88,38 @@ const run = async () => {
   await waiter.waitMining()
   console.log('Create tx mined')
 
+  let toSet:string[] = []
+  const participants = await getParticipants()
+  for (let i = 0; i < 50; i++) {
+    toSet.push(participants[i].publicKey)
+  }
+
+  console.log('Parts: ', toSet);
+  
+  const result2 = await broadcast(new CallContractTx({
+    contractId: result.id,
+    contractVersion: 1,
+    fee: 0,
+    senderPublicKey: developerKeys.publicKey,
+    params: [
+      {
+        key: 'action',
+        type: 'string',
+        value: 'init'
+      }
+    ],
+    payments: [],
+  }), developerKeys)
+  
   console.log('All tx`s sent')
+
+  const data = {
+    NODE_ADDRESS: NODE_ADDRESS,
+    NODE_KEY: NODE_KEYPAIR_PASSWORD,
+    CONTRACT_ID: result.id
+  }
+
+  writeFileSync("../../../frontend/config.json", JSON.stringify(data, null, 2));
 }
 
 run().catch(console.error)
